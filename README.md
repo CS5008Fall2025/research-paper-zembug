@@ -40,6 +40,10 @@ Ant Colony Optimization requires memory to store pheromone values and track the 
 | $k$ ants, $t$ iterations| $O(t \cdot k \cdot n^2)$ | $O(n^2)$     |
 | Simplified reporting    | $O(k \cdot n^2)$     | $O(n^2)$         |
 
+General analysis of the algorithm/datastructure:
+
+ACO is a probabilistic search algorithm designed for complex optimization problems. Instead of guaranteeing exact optimality like deterministic algorithms such as Dijkstra’s, it relies on iterative exploration and reinforcement to find near‑optimal solutions. Its main strengths are adaptability to changing environments, natural parallelism, and robustness in large search spaces. ACO has been successfully applied to problems like the Traveling Salesman Problem, scheduling, and routing, where exact methods are impractical. At the same time, ACO has weaknesses. It converges more slowly than deterministic algorithms, requires careful parameter tuning, and can reinforce suboptimal paths if exploration is limited. Memory usage is also significant, since the pheromone matrix requires $O(n^2)$ space in dense graphs. Overall, ACO is not the fastest or most memory‑efficient method, but it is flexible and effective for NP‑hard problems where approximate solutions are acceptable.
+
 
 ## Empirical Analysis
 - What is the empirical analysis?
