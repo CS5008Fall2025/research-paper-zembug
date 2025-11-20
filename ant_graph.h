@@ -17,5 +17,4 @@ void free_ant_graph(AntGraph* graph);
 void add_edge(AntGraph* graph, int from, int to, double weight);
 
 
-
 #endif
