@@ -8,10 +8,10 @@ TESTFILES = test_ant_graph.c ant_graph.c
 all: ant ant-test  # default builds both
 
 ant: $(CFILES)
-    $(CC) $(CFLAGS) -o ant $(CFILES)
+	$(CC) $(CFLAGS) -o ant $(CFILES)
 
 ant-test: $(TESTFILES)
-    $(CC) $(CFLAGS) -o ant-test $(TESTFILES)
+	$(CC) $(CFLAGS) -o ant-test $(TESTFILES)
 
 clean:
-    -rm -f ant ant-test *.out *.exe
+	-rm -f ant ant-test *.out *.exe
