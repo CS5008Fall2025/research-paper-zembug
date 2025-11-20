@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include "ant_graph.h"
 
-
 int main() {
-    /*AntGraph* g = create_ant_graph(4); // create a graph with 4 nodes
+    AntGraph* g = create_ant_graph(4); // create a graph with 4 nodes
 
     // add some edges
     add_edge(g, 0, 1, 2.5);
@@ -20,8 +19,5 @@ int main() {
     }
 
     free_ant_graph(g); // free the graph memory
-    return 0;
-}*/
-printf("ACO program starting...\n");
     return 0;
 }
