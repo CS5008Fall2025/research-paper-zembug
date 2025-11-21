@@ -2,7 +2,7 @@ CC = gcc        # compiler
 CFLAGS = -Wall  # warning flags
 
 # source files
-CFILES = main.c ant_graph.c
+CFILES = main.c ant_graph.c aco.c
 TESTFILES = test_ant_graph.c ant_graph.c
 
 all: ant ant-test  # default builds both
