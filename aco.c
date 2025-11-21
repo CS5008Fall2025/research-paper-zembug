@@ -78,69 +78,74 @@ void build_path(AntGraph* g, int start, int end, int num_nodes, int* path, int* 
     free(visited); // free memory used for visited array
 }
 
+int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iteration) {
+    printf("Iteration %d:\n", iteration + 1);
 
-/* Run the Ant Colony Optimization algorithm
- * @param g The graph
- * @param colony The ant colony (number of ants, evaporation rate, etc.)
- * @param start The starting node
- * @param end The destination node
- * @param iterations Number of iterations to run
- */
+    int optimal_count = 0;
+
+    // each ant constructs a path
+    for (int a = 0; a < colony->num_ants; a++) {
+        int path[100];
+        int path_length = 0;
+
+        build_path(g, start, end, g->num_nodes, path, &path_length, colony);
+
+        // print the path
+        printf("  Ant %d path:", a + 1);
+        for (int i = 0; i < path_length; i++) {
+            printf(" %d", path[i]);
+        }
+        printf("\n");
+
+        // check if shortcut was taken (0 → end)
+        if (path_length == 2 && path[0] == start && path[1] == end) {
+            optimal_count++;
+        }
+
+        // deposit pheromone
+        double deposit = (path_length > 0) ? 1.0 / path_length : 0.0;
+        for (int i = 0; i < path_length - 1; i++) {
+            int u = path[i];
+            int v = path[i + 1];
+            g->edges[u][v].pheromone += deposit;
+            g->edges[v][u].pheromone += deposit;
+        }
+    }
+
+    // evaporation
+    for (int i = 0; i < g->num_nodes; i++) {
+        for (int j = 0; j < g->num_nodes; j++) {
+            if (g->edges[i][j].exists) {
+                g->edges[i][j].pheromone *= (1.0 - colony->evaporation_rate);
+            }
+        }
+    }
+    printf("  Pheromones evaporate at rate %.2f.\n", colony->evaporation_rate);
+
+    // debug: pheromone matrix
+    printf("  Pheromone matrix:\n");
+    for (int i = 0; i < g->num_nodes; i++) {
+        for (int j = 0; j < g->num_nodes; j++) {
+            if (g->edges[i][j].exists) {
+                printf("%.2f ", g->edges[i][j].pheromone);
+            } else {
+                printf(" .  ");
+            }
+        }
+        printf("\n");
+    }
+
+    return optimal_count; // lets analysis harness measure convergence
+}
+
 void run_aco(AntGraph* g, AntColony* colony, int start, int end, int iterations) {
     printf("Starting ACO with %d ants, %d iterations.\n", colony->num_ants, iterations);
 
-    // main ACO loop for the specified number of iterations
     for (int iteration = 0; iteration < iterations; iteration++) {
-        printf("Iteration %d:\n", iteration + 1);
-        
-        // each ant constructs a path in this iteration
-        for (int a = 0; a < colony->num_ants; a++) {
-            int path[100];       // array to store the path nodes
-            int path_length = 0; // how many nodes are in the path
-
-            // build a path from start to end using pheromone/distance rules
-            build_path(g, start, end, g->num_nodes, path, &path_length, colony);
-
-            // print the path taken by this ant
-            printf("  Ant %d path:", a + 1);
-            for (int i = 0; i < path_length; i++) {
-                printf(" %d", path[i]);
-            }
-            printf("\n");
-
-            // deposit pheromone along the path
-            double deposit = (path_length > 0) ? 1.0 / path_length : 0.0;
-            for (int i = 0; i < path_length - 1; i++) {
-                int u = path[i];
-                int v = path[i + 1];
-                g->edges[u][v].pheromone += deposit;
-                g->edges[v][u].pheromone += deposit; // undirected
-            }
-        }
-
-        // evaporation step: reduce pheromone on all edges
-        for (int i = 0; i < g->num_nodes; i++) {
-            for (int j = 0; j < g->num_nodes; j++) {
-                if (g->edges[i][j].exists) {
-                    g->edges[i][j].pheromone *= (1.0 - colony->evaporation_rate);
-                }
-            }
-        }
-        printf("  Pheromones evaporate at rate %.2f.\n", colony->evaporation_rate);
-
-        // Debug: print pheromone matrix after evaporation
-        printf("  Pheromone matrix:\n");
-        for (int i = 0; i < g->num_nodes; i++) {
-            for (int j = 0; j < g->num_nodes; j++) {
-                if (g->edges[i][j].exists) {
-                    printf("%.2f ", g->edges[i][j].pheromone);
-                } else {
-                    printf(" .  "); // placeholder for non-existent edge
-                }
-            }
-            printf("\n");
-        }
+        run_iteration(g, colony, start, end, iteration);
     }
 
     printf("ACO finished after %d iterations.\n", iterations);
 }
+
+

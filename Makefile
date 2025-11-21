@@ -8,7 +8,7 @@ CFILES = main.c ant_graph.c aco.c
 GRAPH_TESTFILES = test_ant_graph.c ant_graph.c
 ACO_TESTFILES   = test_aco.c ant_graph.c aco.c
 
-all: ant graph-test aco-test  # build everything
+all: ant graph-test aco-test aco-analysis # build everything
 
 ant: $(CFILES)
 	$(CC) $(CFLAGS) -o ant $(CFILES) -lm
@@ -19,5 +19,9 @@ graph-test: $(GRAPH_TESTFILES)
 aco-test: $(ACO_TESTFILES)
 	$(CC) $(CFLAGS) -o aco-test $(ACO_TESTFILES) -lm
 
+aco-analysis: aco_analysis.c ant_graph.c aco.c
+	$(CC) $(CFLAGS) -o aco-analysis aco_analysis.c ant_graph.c aco.c -lm
+
+
 clean:
-	-rm -f ant graph-test aco-test *.out *.exe
+	-rm -f ant graph-test aco-test aco-analysis *.out *.exe
