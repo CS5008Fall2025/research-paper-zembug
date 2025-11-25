@@ -5,7 +5,7 @@
 #include "aco.h"
 
 // declare run_iteration so we can call the one in aco.c
-int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iteration);
+int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iteration, FILE* logfile);
 
 // Analysis harness with convergence tracking
 void run_analysis(int num_nodes, double evap, double pher_w, double dist_w, int iterations, int num_ants) {
@@ -29,7 +29,7 @@ void run_analysis(int num_nodes, double evap, double pher_w, double dist_w, int 
 
     int convergence_iter = -1, consecutive = 0;
     for (int it = 1; it <= iterations; it++) {
-        int optimal_count = run_iteration(g, &colony, 0, num_nodes-1, it);
+        int optimal_count = run_iteration(g, &colony, 0, num_nodes-1, it, stdout);
         double ratio = (double)optimal_count / colony.num_ants;
 
         if (ratio >= 0.9) {

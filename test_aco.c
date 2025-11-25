@@ -27,8 +27,15 @@ int main() {
         .deposit_amount = 1.0
     };
 
+    // Open a log file for this test run
+    FILE* logfile = fopen("test_output.txt", "w");
+    if (!logfile) {
+        perror("Failed to open log file");
+        return 1;
+    }
+
     printf("\nRunning the Ant Colony Optimization saga...\n");
-    run_aco(g, &colony, 0, 3, 3);
+    run_aco(g, &colony, 0, 3, 3, logfile);
 
     // --- Assertions ---
     double shortcut_pheromone = g->edges[0][3].pheromone;
@@ -42,5 +49,6 @@ int main() {
     printf("The quest is victorious: pheromone trails shine brighter than before.\n");
 
     free_ant_graph(g);
+    fclose(logfile);   // close the file
     return 0;
 }
