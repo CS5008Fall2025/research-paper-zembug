@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
+#include <string.h>
 
 #include "aco.h"
 #include "ant_graph.h"
@@ -121,13 +122,13 @@ void build_path(AntGraph* g, int start, int end, int num_nodes, int* path, int* 
 
 // log one ant's path to console and logfile
 static void log_ant_path(FILE* logfile, int* path, int path_length, int ant_id) {
-    printf("  Ant %d path:", ant_id);
+    //printf("  Ant %d path:", ant_id);
     fprintf(logfile, "  Ant %d path:", ant_id);
     for (int i = 0; i < path_length; i++) {
-        printf(" %d", path[i]);
+        //printf(" %d", path[i]);
         fprintf(logfile, " %d", path[i]);
     }
-    printf("\n");
+    //printf("\n");
     fprintf(logfile, "\n");
 }
 
@@ -175,11 +176,29 @@ static void evaporate_pheromones(AntGraph* g, AntColony* colony) {
     }
 }
 
+// compute the weighted cost of a path
+static double compute_path_cost(AntGraph* g, const int* path, int path_length) {
+    double cost = 0.0;
+    for (int i = 0; i < path_length - 1; i++) {
+        int u = path[i];
+        int v = path[i+1];
+        cost += g->edges[u][v].weight;
+    }
+    return cost;
+}
 
-// log the best path found in this iteration (console, logfile, and CSV)
-static void log_iteration_best(FILE* logfile, int iteration, int* best_path, int best_length) {
-    printf("  Best path length this iteration: %d\n", best_length);
-    fprintf(logfile, "  Best path length this iteration: %d\n", best_length);
+
+
+static void log_iteration_best(FILE* logfile, int iteration,
+                               AntGraph* g, int* best_path, int best_length) {
+    double cost = compute_path_cost(g, best_path, best_length);
+
+    // existing logs...
+    printf("  Best path node count this iteration: %d\n", best_length);
+    fprintf(logfile, "  Best path node count this iteration: %d\n", best_length);
+
+    printf("  Best path weighted cost this iteration: %.2f\n", cost);
+    fprintf(logfile, "  Best path weighted cost this iteration: %.2f\n", cost);
 
     printf("  Best path:");
     fprintf(logfile, "  Best path:");
@@ -190,13 +209,19 @@ static void log_iteration_best(FILE* logfile, int iteration, int* best_path, int
     printf("\n");
     fprintf(logfile, "\n");
 
-    // also log to CSV for convergence curve
+    // normalized cost vs chain baseline (edit baseline if needed)
+    double chain_cost = 1.1 * (g->num_nodes - 1);
+    double norm = cost / chain_cost;
+
+    // CSV append
     FILE* csv = fopen("convergence.csv", "a");
     if (csv) {
-        fprintf(csv, "%d,%d\n", iteration + 1, best_length);
+        fprintf(csv, "%d,%d,%.2f,%.4f\n",
+                iteration + 1, best_length, cost, norm);
         fclose(csv);
     }
 }
+
 
 
 
@@ -235,7 +260,7 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
 
     // log iteration best
     if (best_length < INT_MAX) {
-        log_iteration_best(logfile, iteration, best_path, best_length);
+        log_iteration_best(logfile, iteration, g, best_path, best_length);    
     }
 
     free(best_path);  // <-- free AFTER last use
@@ -244,19 +269,23 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
 }
 
 
+
+
+
+
 // log the global best path after all iterations
 static void log_global_best(FILE* logfile, AntColony* colony) {
     if (colony->global_best_length < INT_MAX) {
-        printf("Global best path length: %d\n", colony->global_best_length);
+        //printf("Global best path length: %d\n", colony->global_best_length);
         fprintf(logfile, "Global best path length: %d\n", colony->global_best_length);
 
-        printf("Global best path:");
+        //printf("Global best path:");
         fprintf(logfile, "Global best path:");
         for (int i = 0; i < colony->global_best_length; i++) {
-            printf(" %d", colony->global_best_path[i]);
+            //printf(" %d", colony->global_best_path[i]);
             fprintf(logfile, " %d", colony->global_best_path[i]);
         }
-        printf("\n");
+        //printf("\n");
         fprintf(logfile, "\n");
     }
 }
@@ -269,7 +298,7 @@ void run_aco(AntGraph* g, AntColony* colony, int start, int end, int iterations,
 
     FILE* csv = fopen("convergence.csv", "w");
     if (csv) {
-        fprintf(csv, "Iteration,BestPathLength\n");
+        fprintf(csv, "Iteration,BestPathLength,BestPathCost,NormBestCost\n");
         fclose(csv);
     }
     colony->global_best_length = INT_MAX;

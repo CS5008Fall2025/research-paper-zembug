@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ant_graph.h"
 
+
 /* Create a new graph with n nodes
  * @param n Number of nodes
  * @return Pointer to the newly created AntGraph
@@ -35,6 +36,7 @@ AntGraph* create_ant_graph(int n) {
     return g; // return the created graph
 }
 
+
 /* Free the memory used by the graph
  * @param g Pointer to the AntGraph to be freed
  *
@@ -48,6 +50,7 @@ void free_ant_graph(AntGraph* g) {
     free(g->edges); // free the array of row pointers
     free(g);        // free the graph structure itself
 }
+
 
 /* Add an edge with a specified weight between two nodes
  * @param g Pointer to the AntGraph
@@ -74,6 +77,7 @@ void add_edge(AntGraph* g, int from, int to, double weight) {
     g->edges[to][from].pheromone = 1.0; // reset pheromone to baseline
     g->edges[to][from].exists = 1;      // mark edge as existing
 }
+
 
 /* Print the adjacency matrix of the graph
  * @param g Pointer to the AntGraph (const since not modifying it)

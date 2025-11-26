@@ -3,7 +3,7 @@
 #include "ant_graph.h"
 #include "aco.h"
 
-#define GRAPH_SIZE 100 // change graph size here
+#define GRAPH_SIZE 50 // change graph size here
 #define NUM_ANTS 100 // change number of ants here
 
 
@@ -25,10 +25,10 @@ int main() {
     }
 
     // balanced shortcuts
-    add_edge(g, 0, 10, 9.0);
-    add_edge(g, 5, 19, 14.0);
-    add_edge(g, 3, 15, 12.0);
-    add_edge(g, 8, 14, 6.0);
+    add_edge(g, 0, 20, 2.0);
+    add_edge(g, 5, 20, 1.0);
+    add_edge(g, 3, 20, 2.0);
+    add_edge(g, 8, 20, 1.0);
 
     // seed pheromone on shortcuts
     g->edges[0][10].pheromone = g->edges[10][0].pheromone = 20.0;
