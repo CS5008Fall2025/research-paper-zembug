@@ -131,14 +131,6 @@ static void log_ant_path(FILE* logfile, int* path, int path_length, int ant_id) 
     fprintf(logfile, "\n");
 }
 
-// check if a path matches a given target sequence
-static int check_target_path(int* path, int path_length, int* target, int target_len) {
-    if (path_length < target_len) return 0;
-    for (int i = 0; i < target_len; i++) {
-        if (path[i] != target[i]) return 0;
-    }
-    return 1;
-}
 
 // deposit pheromones along a path, with clamping
 static void deposit_pheromones(AntGraph* g, int* path, int path_length, AntColony* colony) {
@@ -157,23 +149,18 @@ static void deposit_pheromones(AntGraph* g, int* path, int path_length, AntColon
     }
 }
 
-// update iteration best and global best paths
-static void update_best_paths(int* path, int path_length, int* best_path, int* best_length, AntColony* colony) {
-    // iteration best
+// Update the best path if the new one is shorter
+void update_best_paths(const int *path, int path_length, int *best_path, int *best_length, AntColony *colony) {
+    // Only update if this path is better
     if (path_length < *best_length) {
-        *best_length = path_length;
-        for (int i = 0; i < path_length; i++) {
-            best_path[i] = path[i];
-        }
-    }
-    // global best
-    if (path_length < colony->global_best_length) {
-        colony->global_best_length = path_length;
-        for (int i = 0; i < path_length; i++) {
-            colony->global_best_path[i] = path[i];
-        }
+        // Cap the copy length to avoid overflow
+        int len = (path_length < colony->max_steps) ? path_length : colony->max_steps;
+
+        memcpy(best_path, path, len * sizeof(int));
+        *best_length = len;
     }
 }
+
 
 // evaporate pheromones across the whole graph
 static void evaporate_pheromones(AntGraph* g, AntColony* colony) {
@@ -219,14 +206,12 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
 
     int optimal_count = 0;
     int max_steps = g->num_nodes * 5;
+    colony->max_steps = max_steps;
 
-    // tracker for best path this iteration
+
+    int *best_path = malloc(max_steps * sizeof(int));
+    if (!best_path) { fprintf(stderr, "Memory allocation failed\n"); exit(1); }
     int best_length = INT_MAX;
-    int best_path[100]; // adjust size if needed
-
-    // example target sequence
-    int target[] = {0, 10, 11, 12, 13, 14, 8, 9};
-    int target_len = sizeof(target)/sizeof(target[0]);
 
     for (int a = 0; a < colony->num_ants; a++) {
         int *path = malloc(max_steps * sizeof(int));
@@ -235,15 +220,8 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
 
         build_path(g, start, end, g->num_nodes, path, &path_length, colony);
 
-        // use helper to log ant path
         log_ant_path(logfile, path, path_length, a+1);
 
-        // use helper to check target path
-        if (check_target_path(path, path_length, target, target_len)) {
-            optimal_count++;
-        }
-
-        // pheromone deposit + best path tracking
         if (path_length > 0 && path[path_length - 1] == end) {
             deposit_pheromones(g, path, path_length, colony);
             update_best_paths(path, path_length, best_path, &best_length, colony);
@@ -252,13 +230,15 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
         free(path);
     }
 
-    // use helper to evaporate pheromones
+    // evaporate pheromones
     evaporate_pheromones(g, colony);
 
-    // use helper to log iteration best
+    // log iteration best
     if (best_length < INT_MAX) {
         log_iteration_best(logfile, iteration, best_path, best_length);
     }
+
+    free(best_path);  // <-- free AFTER last use
 
     return optimal_count;
 }

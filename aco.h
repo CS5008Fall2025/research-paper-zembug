@@ -15,6 +15,7 @@ typedef struct {
     // global best path tracking
     int global_best_path[100]; // array to store the best path found
     int global_best_length; // length of the best path found
+    int max_steps; // maximum allowed steps in a path
 } AntColony;
 
 
