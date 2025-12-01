@@ -21,8 +21,8 @@ int main() {
     // Colony parameters
     AntColony colony = {
         .num_ants = 3,
-        .pheromone_weight = 1.0,
-        .distance_weight = 2.0,
+        .alpha = 1.0,
+        .beta = 2.0,
         .evaporation_rate = 0.1,
         .deposit_amount = 1.0
     };

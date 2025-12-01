@@ -19,8 +19,8 @@ void run_analysis(int num_nodes, double evap, double pher_w, double dist_w, int 
 
     AntColony colony = {
         .num_ants = num_ants,
-        .pheromone_weight = pher_w,
-        .distance_weight = dist_w,
+        .alpha = pher_w,
+        .beta = dist_w,
         .evaporation_rate = evap,
         .deposit_amount = 1.0
     };
