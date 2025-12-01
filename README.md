@@ -55,13 +55,21 @@ To evaluate the performance of Ant Colony Optimization (ACO), I conducted experi
 The normalized cost was calculated by dividing the best path cost by a baseline “chain” path cost, defined as $1.1 \cdot (𝑛 − 1)$ for a graph of $𝑛$
  nodes. This provides a scale free measure of efficiency, allowing comparisons across different graph sizes. The improvement factor was computed as the ratio of the baseline cost to the best path cost, showing how much better the colony’s solution was compared to the trivial chain.
 
+# ACO Parameter Comparison
+
 | Run | α (Alpha) | β (Beta) | ρ (Evaporation) | Q (Deposit) | GlobalBestLength | GlobalBestCost | NormBestCost | ImprovementFactor |
 |-----|-----------|----------|-----------------|-------------|------------------|----------------|--------------|-------------------|
-| 1   |      1.0  |    0.5   |          0.1    |   1.0       |        31        |       33.90    |       0.6289 |     1.59          |
-| 2   |           |          |                 |             |                  |                |              |                   |
-| 3   |           |          |                 |             |                  |                |              |                   |
-| 4   |           |          |                 |             |                  |                |              |                   |
-| 5   |           |          |                 |             |                  |                |              |                   |
+| 1   | 1.0       | 0.5      | 0.1             | 1.0         |                  |                |              |                   |
+| 2   | 1.0       | 3.0      | 0.5             | 10.0        |                  |                |              |                   |
+| 3   | 0.5       | 4.0      | 0.6             | 10.0        |                  |                |              |                   |
+| 4   | 2.0       | 2.0      | 0.4             | 10.0        |                  |                |              |                   |
+| 5   | 1.0       | 2.0      | 0.5             | 1.0         |                  |                |              |                   |
+| 6   | 1.0       | 3.0      | 0.3             | 10.0        |                  |                |              |                   |
+| 7   | 1.0       | 3.0      | 0.6             | 10.0        |                  |                |              |                   |
+| 8   | 0.5       | 3.0      | 0.4             | 10.0        |                  |                |              |                   |
+| 9   | 2.0       | 1.0      | 0.5             | 10.0        |                  |                |              |                   |
+| 10  | 1.5       | 3.0      | 0.4             | 10.0        |                  |                |              |                   |
+
 
 
 ## Application

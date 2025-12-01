@@ -7,7 +7,7 @@
 #include "aco.h"
 
 #define GRAPH_SIZE 50
-#define NUM_ANTS 200
+#define NUM_ANTS 20
 
 int main() {
     printf("ACO program starting...\n");
@@ -43,8 +43,8 @@ int main() {
     colony.num_ants = NUM_ANTS;
     colony.alpha = 5.0;
     colony.beta = 4.0;
-    colony.evaporation_rate = 0.5; // Q
-    colony.deposit_amount = 10.0; // p
+    colony.evaporation_rate = 0.5; // p
+    colony.deposit_amount = 10.0; // Q
 
     colony.global_best_length = INT_MAX;
     colony.global_best_capacity = GRAPH_SIZE;
