@@ -53,23 +53,30 @@ ACO is a probabilistic search algorithm designed for complex optimization proble
 To evaluate the performance of Ant Colony Optimization (ACO), I conducted experiments varying the algorithm’s parameters: pheromone influence (α), heuristic influence (β), evaporation rate (ρ), and deposit amount (Q). Each run produced a convergence log in CSV format, recording both the best solution found in each iteration and the overall global best solution. At the end of each run, a “Final” row was appended to summarize the colony’s global best path length, cost, normalized cost, and improvement factor.
 
 The normalized cost was calculated by dividing the best path cost by a baseline “chain” path cost, defined as $1.1 \cdot (𝑛 − 1)$ for a graph of $𝑛$
- nodes. This provides a scale free measure of efficiency, allowing comparisons across different graph sizes. The improvement factor was computed as the ratio of the baseline cost to the best path cost, showing how much better the colony’s solution was compared to the trivial chain.
+nodes. This provides a scale free measure of efficiency, allowing comparisons across different graph sizes. The improvement factor was computed as the ratio of the baseline cost to the best path cost, showing how much better the colony’s solution was compared to the trivial chain.
 
 # ACO Parameter Comparison
 
 | Run | α (Alpha) | β (Beta) | ρ (Evaporation) | Q (Deposit) | GlobalBestLength | GlobalBestCost | NormBestCost | ImprovementFactor |
 |-----|-----------|----------|-----------------|-------------|------------------|----------------|--------------|-------------------|
-| 1   | 1.0       | 0.5      | 0.1             | 1.0         |                  |                |              |                   |
-| 2   | 1.0       | 3.0      | 0.5             | 10.0        |                  |                |              |                   |
-| 3   | 0.5       | 4.0      | 0.6             | 10.0        |                  |                |              |                   |
-| 4   | 2.0       | 2.0      | 0.4             | 10.0        |                  |                |              |                   |
-| 5   | 1.0       | 2.0      | 0.5             | 1.0         |                  |                |              |                   |
-| 6   | 1.0       | 3.0      | 0.3             | 10.0        |                  |                |              |                   |
-| 7   | 1.0       | 3.0      | 0.6             | 10.0        |                  |                |              |                   |
-| 8   | 0.5       | 3.0      | 0.4             | 10.0        |                  |                |              |                   |
-| 9   | 2.0       | 1.0      | 0.5             | 10.0        |                  |                |              |                   |
-| 10  | 1.5       | 3.0      | 0.4             | 10.0        |                  |                |              |                   |
+| 1   | 1.0       | 0.5      | 0.1             | 1.0         | 13               | 18.40          | 0.3414       | 2.9293            |
+| 2   | 1.0       | 3.0      | 0.5             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 3   | 0.5       | 4.0      | 0.6             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 4   | 2.0       | 2.0      | 0.4             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 5   | 1.0       | 2.0      | 0.5             | 1.0         | 13               | 18.40          | 0.3414       | 2.9293            |
+| 6   | 1.0       | 3.0      | 0.3             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 7   | 1.0       | 3.0      | 0.6             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 8   | 0.5       | 3.0      | 0.4             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 9   | 2.0       | 1.0      | 0.5             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
+| 10  | 1.5       | 3.0      | 0.4             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
 
+Each run in the experiment used different parameter settings, which shaped how the ant colony explored the graph. Alpha (α) controls how strongly ants follow pheromone trails, while Beta (β) determines how much they rely on heuristic information such as edge length. Evaporation (ρ) sets the rate at which pheromone trails fade, encouraging exploration when it is high, and Deposit (Q) is the amount of pheromone added when a path is found, reinforcing successful solutions more strongly when it is large. The outcome columns summarize what the colony achieved: GlobalBestLength is the number of nodes in the best path discovered, and GlobalBestCost is the total cost of that path. NormBestCost expresses this cost on a standardized 0–1 scale, showing how close the solution is to the optimal compared to the worst possible path in the graph. ImprovementFactor shows how much better the final solution was compared to the baseline.
+
+In this experiment, all ten runs converged to the same final solution: a 13‑node path with a cost of 18.40, normalized to 0.3414, and an improvement factor of 2.9293. This consistency reflects the graph’s structure, which strongly favored the shortcut path. The parameters did not change the destination, but they did influence the journey — some runs locked into the optimal path almost immediately, while others wandered through longer detours before reinforcing the best solution. The final row captures only the end result, which is why iteration logs are essential: they reveal how exploration dynamics differ even when the colony ultimately finds the same optimum.
+
+Although every run ended with the same final solution (a 13‑node path with cost 18.40) the way each colony reached that solution was very different. The Final Results table captures only the destination, but the iteration logs reveal the journey. Some runs converged almost instantly, locking onto the optimal path from the very first iteration. Others wandered through longer detours, reinforcing suboptimal paths before eventually rediscovering the shortcut. In a few cases, the colony oscillated between multiple path lengths, showing unstable reinforcement before settling. This contrast highlights the role of parameters: they did not change the ultimate answer in this graph, but they shaped the exploration process, influencing whether ants found the best path quickly, slowly, or unpredictably. The Iteration Comparison table makes these differences visible, showing that the colony’s dynamics depend on how pheromone influence, heuristic bias, evaporation, and deposit strength interact during the search.
+
+![Best Path Cost Convergence](bestpathcost)
 
 
 ## Application

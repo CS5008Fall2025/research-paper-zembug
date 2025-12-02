@@ -9,17 +9,32 @@
 #include "ant_graph.h"
 
 int pick_next_node(AntGraph* g, int current, int previous, int* visited, int num_nodes, AntColony* colony) {
+    double exploration_prob = 0.05; // 5% chance to pick a random unvisited neighbor
+
+    // First, collect all valid neighbors
+    int valid_count = 0;
+    int valid_nodes[num_nodes];
+    for (int j = 0; j < num_nodes; j++) {
+        if (!g->edges[current][j].exists || (colony->prevent_backtracking && j == previous) || visited[j])
+            continue;
+        valid_nodes[valid_count++] = j;
+    }
+
+    // If random exploration triggers, pick a random neighbor
+    if (valid_count > 0 && ((double)rand() / RAND_MAX) < exploration_prob) {
+        return valid_nodes[rand() % valid_count];
+    }
+
+    // Otherwise, use normal pheromone + heuristic probability
     double* appeal = malloc(num_nodes * sizeof(double));
     if (!appeal) return -1;
 
     double total = 0.0;
-
     for (int j = 0; j < num_nodes; j++) {
         if (!g->edges[current][j].exists || (colony->prevent_backtracking && j == previous) || visited[j]) {
             appeal[j] = 0;
             continue;
         }
-
         double pher = g->edges[current][j].pheromone;
         double heur = 1.0 / g->edges[current][j].weight;
         appeal[j] = pow(pher, colony->alpha) * pow(heur, colony->beta);
@@ -33,7 +48,6 @@ int pick_next_node(AntGraph* g, int current, int previous, int* visited, int num
 
     double r = ((double)rand() / RAND_MAX) * total;
     double cumulative = 0.0;
-
     for (int j = 0; j < num_nodes; j++) {
         cumulative += appeal[j];
         if (cumulative >= r) {
@@ -55,6 +69,7 @@ int pick_next_node(AntGraph* g, int current, int previous, int* visited, int num
     free(appeal);
     return best;
 }
+
 
 void build_path(AntGraph* g, int start, int end, int num_nodes, int* path, int* path_length, AntColony* colony) {
     int* visited = calloc(num_nodes, sizeof(int));
@@ -198,14 +213,13 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
         build_path(g, start, end, g->num_nodes, path, &path_length, colony);
 
         if (path_length > 0 && path[path_length - 1] == end) {
-            deposit_pheromones(g, path, path_length, colony);
-
+            // Track the iteration-best path
             if (path_length < best_length) {
                 best_length = path_length;
                 memcpy(best_path, path, best_length * sizeof(int));
             }
 
-            // update global best
+            // Update global best path
             if (path_length < colony->global_best_length) {
                 int copy_len = (path_length > colony->global_best_capacity) ? colony->global_best_capacity : path_length;
                 memcpy(colony->global_best_path, path, copy_len * sizeof(int));
@@ -213,15 +227,24 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
             }
         }
 
-        // 🔹 Add this line if you want to log every ant’s path:
+        // Optional: log each ant's path
         log_ant_path(logfile, path, path_length, a);
 
         free(path);
     }
 
+    // Deposit pheromones only for iteration-best and global-best
+    if (best_length < INT_MAX) {
+        deposit_pheromones(g, best_path, best_length, colony); // iteration-best
+    }
+    if (colony->global_best_length < INT_MAX) {
+        deposit_pheromones(g, colony->global_best_path, colony->global_best_length, colony); // global-best
+    }
 
-    // evaporate after all ants
+    // Evaporate pheromones after deposition
     evaporate_pheromones(g, colony);
+
+    // Log iteration-best to CSV/console
     if (best_length < INT_MAX) {
         log_iteration_best(logfile, iteration, g, best_path, best_length, colony);
     }
@@ -229,6 +252,8 @@ int run_iteration(AntGraph* g, AntColony* colony, int start, int end, int iterat
     free(best_path);
     return 0;
 }
+
+
 
 // log the global best path after all iterations
 static void log_global_best(FILE* logfile, AntColony* colony) {
