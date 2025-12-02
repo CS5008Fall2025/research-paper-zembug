@@ -76,7 +76,7 @@ In this experiment, all ten runs converged to the same final solution: a 13‑no
 
 Although every run ended with the same final solution (a 13‑node path with cost 18.40) the way each colony reached that solution was very different. The Final Results table captures only the destination, but the iteration logs reveal the journey. Some runs converged almost instantly, locking onto the optimal path from the very first iteration. Others wandered through longer detours, reinforcing suboptimal paths before eventually rediscovering the shortcut. In a few cases, the colony oscillated between multiple path lengths, showing unstable reinforcement before settling. This contrast highlights the role of parameters: they did not change the ultimate answer in this graph, but they shaped the exploration process, influencing whether ants found the best path quickly, slowly, or unpredictably. The Iteration Comparison table makes these differences visible, showing that the colony’s dynamics depend on how pheromone influence, heuristic bias, evaporation, and deposit strength interact during the search.
 
-![Best Path Cost Convergence](bestpathcost)
+![Best Path Cost Convergence](bestpathcost.png)
 
 
 ## Application
