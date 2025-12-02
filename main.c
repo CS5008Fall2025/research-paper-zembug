@@ -6,7 +6,7 @@
 #include "ant_graph.h"
 #include "aco.h"
 
-#define GRAPH_SIZE 50   // number of nodes in the graph
+#define GRAPH_SIZE 1000   // number of nodes in the graph
 #define NUM_ANTS 100    // number of ants in the colony
 
 int main() {
@@ -43,9 +43,9 @@ int main() {
     // Create and configure the ant colony
     AntColony colony;
     colony.num_ants = NUM_ANTS;
-    colony.alpha = 1.5; // pheromone influence (higher = stronger bias toward pheromone trails)
+    colony.alpha = 1.0; // pheromone influence (higher = stronger bias toward pheromone trails)
     colony.beta = 3.0; // heuristic influence (higher = stronger bias toward shorter edges)
-    colony.evaporation_rate = 0.4; // pheromone evaporation rate (slower evaporation preserves trails longer)
+    colony.evaporation_rate = 0.5; // pheromone evaporation rate (slower evaporation preserves trails longer)
     colony.deposit_amount = 10.0; // pheromone deposited per ant per path
 
     // Initialize global best path tracking

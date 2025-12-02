@@ -78,8 +78,24 @@ In this experiment, all ten runs converged to the same final solution: a 13‑no
 
 The chart of BestPathCost across iterations shows these dynamics clearly. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the optimum. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final row to the full trajectory of exploration.
 
+## Convergence Statistics
 
+| Run | Iterations to Convergence* | Avg. Pre‑Convergence Cost | Max. Detour Cost | Oscillation Notes |
+|-----|-----------------------------|---------------------------|------------------|-------------------|
+| 1   | ~25                         | 28.7                      | 31.9             | Mild wandering before stabilizing |
+| 2   | ~30                         | 29.5                      | 31.9             | Similar to Run 1, delayed lock‑in |
+| 3   | ~45                         | 33.8                      | 40.4             | Long oscillations, slowest convergence |
+| 4   | ~5                          | 18.4                      | 18.4             | Immediate convergence, no detours |
+| 5   | ~5                          | 18.4                      | 18.4             | Same as Run 4, rapid lock‑in |
+| 6   | ~40                         | 32.6                      | 36.9             | Oscillated between detours before stabilizing |
+| 7   | ~28                         | 27.9                      | 31.9             | Moderate wandering, eventual lock‑in |
+| 8   | ~32                         | 29.1                      | 31.9             | Similar to Run 7, delayed convergence |
+| 9   | ~5                          | 18.4                      | 18.4             | Immediate convergence, stable |
+| 10  | ~6                          | 18.4                      | 18.4             | Near‑instant convergence |
 
+Iterations to Convergence = approximate iteration count when BestPathCost first reached 18.40 and remained stable.
+
+![ACO Convergence Speed by Run](ConvergenceSpeed.png)
 
 ## Application
 - What is the algorithm/datastructure used for?
