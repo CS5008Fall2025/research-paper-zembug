@@ -3,15 +3,10 @@
 #include "ant_graph.h"
 
 
-/* Create a new graph with n nodes
+/** Create a new graph with n nodes
  * @param n Number of nodes
  * @return Pointer to the newly created AntGraph
- *
  * Allocates memory for the graph structure and its adjacency matrix.
- * Each edge is initialized with default values:
- *   - weight = 0.0 (no edge yet)
- *   - pheromone = 1.0 (baseline level)
- *   - exists = 0 (edge does not exist)
  */
 AntGraph* create_ant_graph(int n) {
     AntGraph* g = malloc(sizeof(AntGraph)); // allocate memory for the graph structure
@@ -28,38 +23,35 @@ AntGraph* create_ant_graph(int n) {
 
         // initialize each edge in the row
         for (int j = 0; j < n; j++) {
-            g->edges[i][j].weight = 0.0;     // default weight, no edge yet
-            g->edges[i][j].pheromone = 1.0;  // baseline pheromone level
-            g->edges[i][j].exists = 0;       // edge does not exist
+            g->edges[i][j].weight = 0.0; // default weight, no edge yet
+            g->edges[i][j].pheromone = 1.0; // baseline pheromone level
+            g->edges[i][j].exists = 0; // edge does not exist
         }
     }
     return g; // return the created graph
 }
 
 
-/* Free the memory used by the graph
- * @param g Pointer to the AntGraph to be freed
- *
- * Frees each row of the adjacency matrix, then the row pointer array,
- * and finally the graph structure itself.
+/** Free the memory used by the graph
+ *  @param g Pointer to the AntGraph to be freed
+ *  Frees each row of the adjacency matrix, then the row pointer array,
+ *  and finally the graph structure itself.
  */
 void free_ant_graph(AntGraph* g) {
     for (int i = 0; i < g->num_nodes; i++) {
         free(g->edges[i]); // free each row of the adjacency matrix
     }
     free(g->edges); // free the array of row pointers
-    free(g);        // free the graph structure itself
+    free(g); // free the graph structure itself
 }
 
 
-/* Add an edge with a specified weight between two nodes
+/** Add an edge with a specified weight between two nodes
  * @param g Pointer to the AntGraph
  * @param from Source node index
  * @param to Destination node index
  * @param weight Weight of the edge
- *
  * Updates both directions of the adjacency matrix since the graph is undirected.
- * Initializes pheromone to baseline (1.0) and marks the edge as existing.
  */
 void add_edge(AntGraph* g, int from, int to, double weight) {
     // validate indices: ensure they are within bounds
@@ -71,17 +63,16 @@ void add_edge(AntGraph* g, int from, int to, double weight) {
     // set edge fields for both directions (undirected graph)
     g->edges[from][to].weight = weight;
     g->edges[from][to].pheromone = 1.0; // reset pheromone to baseline
-    g->edges[from][to].exists = 1;      // mark edge as existing
+    g->edges[from][to].exists = 1; // mark edge as existing
 
     g->edges[to][from].weight = weight;
     g->edges[to][from].pheromone = 1.0; // reset pheromone to baseline
-    g->edges[to][from].exists = 1;      // mark edge as existing
+    g->edges[to][from].exists = 1; // mark edge as existing
 }
 
 
-/* Print the adjacency matrix of the graph
+/** Print the adjacency matrix of the graph
  * @param g Pointer to the AntGraph (const since not modifying it)
- *
  * Format: weight|pheromone if edge exists, otherwise ". | ."
  */
 void print_ant_graph(const AntGraph* g) {

@@ -1,0 +1,5 @@
+Iteration,BestPathLength,BestPathCost,NormBestCost,GlobalBestLength,GlobalBestCost,ImprovementFactor,Alpha,Beta,Evaporation,Deposit
+1,4,3.00,0.9091,4,3.00,1.1000,1.00,2.00,0.10,1.00
+2,4,3.00,0.9091,4,3.00,1.1000,1.00,2.00,0.10,1.00
+3,2,2.00,0.6061,2,2.00,1.6500,1.00,2.00,0.10,1.00
+Final,2,2.00,0.6061,2,2.00,1.6500,1.00,2.00,0.10,1.00

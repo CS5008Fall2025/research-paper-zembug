@@ -29,6 +29,4 @@ void add_edge(AntGraph* graph, int from, int to, double weight);
 void print_ant_graph(const AntGraph* g);
 
 
-
-
 #endif

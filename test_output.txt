@@ -1,0 +1,25 @@
+Starting ACO with 3 ants, 3 iterations.
+Iteration 1:
+  Ant 0 path: 0 1 2 3
+  Ant 1 path: 0 1 2 3
+  Ant 2 path: 0 1 2 3
+  Best path node count this iteration: 4
+  Best path weighted cost this iteration: 3.00
+  Best path: 0 1 2 3
+Iteration 2:
+  Ant 0 path: 0 1 2 3
+  Ant 1 path: 0 1 2 3
+  Ant 2 path: 0 1 2 3
+  Best path node count this iteration: 4
+  Best path weighted cost this iteration: 3.00
+  Best path: 0 1 2 3
+Iteration 3:
+  Ant 0 path: 0 3
+  Ant 1 path: 0 1 2 3
+  Ant 2 path: 0 1 2 3
+  Best path node count this iteration: 2
+  Best path weighted cost this iteration: 2.00
+  Best path: 0 3
+ACO finished after 3 iterations.
+Global best path length: 2
+Global best path: 0 3
