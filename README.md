@@ -47,8 +47,6 @@ ACO is a probabilistic search algorithm designed for complex optimization proble
 
 
 ## Empirical Analysis
-- What is the empirical analysis?
-- Provide specific examples / data.
 
 To evaluate the performance of Ant Colony Optimization (ACO), I conducted experiments varying the algorithm’s parameters: pheromone influence (α), heuristic influence (β), evaporation rate (ρ), and deposit amount (Q). Each run produced a convergence log in CSV format, recording both the best solution found in each iteration and the overall global best solution. At the end of each run, a “Final” row was appended to summarize the colony’s global best path length, cost, normalized cost, and improvement factor.
 
@@ -97,12 +95,31 @@ Iterations to Convergence = approximate iteration count when BestPathCost first 
 
 ![ACO Convergence Speed by Run](ConvergenceSpeed.png)
 
-## Application
-- What is the algorithm/datastructure used for?
-- Provide specific examples
-- Why is it useful / used in that field area?
-- Make sure to provide sources for your information.
+Together, the empirical tables and charts demonstrate that evaluating ACO requires looking beyond final solutions to the full convergence trajectory, where parameter choices determine whether colonies find the optimum quickly, slowly, or unpredictably.
 
+## Theoretical Analysis
+When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
+
+For runtime, let $𝑛$ be the number of nodes, $𝑚$ the number of ants, and $𝑇$ the number of iterations. Each ant builds a path of up to $𝑛$ steps, and at each step it considers up to $𝑛$ neighbors. That means one ant does about $𝑂(𝑛^2)$ work in a single iteration. With $𝑚$ ants, the cost per teration is $𝑂(𝑚\cdot𝑛^2)$ and across $𝑇$ iterations the total runtime is $𝑂(𝑇\cdot𝑚\cdot𝑛^2)$. For space, storing the graph with pheromone values takes 
+$𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛). So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛). Correctness comes from the way pheromone reinforcement works. If a path has cost $𝐿𝑘$, the pheromone added is $𝑄𝐿𝑘$ so shorter paths get more pheromone. Over time, this makes them more likely to be chosen, and the probability of selecting the best path increases with each iteration until the colony converges.
+
+```
+Pseudocode
+text
+for iteration = 1 to T:
+    for each ant in colony:
+        path = construct_path()   # O(n^2)
+        cost = compute_cost(path) # O(n)
+        if cost < best_cost:
+            best_path = path
+    update_pheromones(best_path)  # \Deltatau_ij = Q / L_best
+    evaporate_pheromones()        # tau_ij ← (1 - rho) * tau_ij
+```
+
+
+## Application
+
+Ant Colony Optimization (ACO) is a metaheuristic algorithm designed to solve complex combinatorial optimization problems, particularly those that can be represented as graphs. Its inspiration comes from the collective foraging behavior of ants, which efficiently discover shortest paths between food sources and their nest. In practice, ACO has been applied to a wide range of domains. In computer science and telecommunications, it is used for network routing, where dynamic traffic conditions require adaptive path selection to minimize congestion and latency. In operations research, ACO is widely employed for the Traveling Salesman Problem and vehicle routing, helping logistics companies reduce delivery times and costs. Manufacturing and project management benefit from ACO’s scheduling capabilities, where tasks must be allocated across machines or workers in ways that balance efficiency and resource use. Engineering fields have adopted ACO for design optimization, while water resource management has leveraged it to improve reservoir operations and groundwater allocation. More recently, healthcare applications have emerged, such as optimizing treatment schedules and hospital resource distribution. ACO is particularly useful in these areas because it is robust, scalable, and adaptable to dynamic environments, allowing it to escape local optima and converge on strong global solutions. Its ability to model distributed decision-making makes it a natural fit for real-world problems where traditional deterministic algorithms struggle to cope with complexity and uncertainty. [3]
 
 ## Implementation
 - What language did you use?
@@ -111,6 +128,7 @@ Iterations to Convergence = approximate iteration count when BestPathCost first 
 - Provide key points of the algorithm/datastructure implementation, discuss the code.
 - If you found code in another language, and then implemented in your own language that is fine - but make sure to document that.
 
+The Ant Colony Optimization algorithm was implemented in C, chosen for its speed, fine‑grained memory control, and suitability for handling graph structures directly. Standard libraries such as `<stdio.h>` and `<stdlib.h>` were used for input/output and dynamic memory allocation, while custom data structures were written to manage adjacency lists and pheromone matrices. One of the key engineering challenges was ensuring that path construction respected the maximum path length without exceeding allocated buffers, which required careful boundary checks and defensive programming to prevent overflow errors. Another difficulty arose when certain edges with very low weights and strong pheromone reinforcement caused the colony to collapse too quickly onto a single path. To counter this, variability was introduced into the decision process so that ants occasionally explored alternative routes, balancing exploitation with exploration. The pheromone update rules also had to be tuned so that shortcuts were reinforced appropriately without overwhelming longer detours, ensuring that convergence was stable rather than immediate and brittle. The final implementation followed the standard ACO cycle: ants construct paths probabilistically based on pheromone and heuristic information, pheromone trails are updated after each iteration, and evaporation ensures weaker paths fade over time. While reference implementations exist in other languages, this project was coded in C to maintain transparency and reproducibility, with modular functions for path construction, pheromone updates, and logging that made it straightforward to experiment with different parameter settings and observe their effects.
 
 ## Summary
 - Provide a summary of your findings
@@ -122,3 +140,5 @@ Iterations to Convergence = approximate iteration count when BestPathCost first 
 1. GeeksforGeeks. 2025. Introduction to Ant Colony Optimization. (July 12, 2025). Retrieved November 18, 2025 from https://www.geeksforgeeks.org/machine-learning/introduction-to-ant-colony-optimization/
 
 2. Wikipedia. 2025. Ant colony optimization algorithms. (October 1, 2025).  Retrieved November 18, 2025 from https://en.wikipedia.org/wiki/Ant_colony_optimization_algorithms
+
+3. Springer Nature Link. 2024. Applications of Ant Colony Optimization and its Variants. Retrieved December 2, 2025 from https://link.springer.com/book/10.1007/978-981-99-7227-2
