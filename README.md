@@ -101,7 +101,7 @@ Together, the empirical tables and charts demonstrate that evaluating ACO requir
 When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
 
 For runtime, let $𝑛$ be the number of nodes, $𝑚$ the number of ants, and $𝑇$ the number of iterations. Each ant builds a path of up to $𝑛$ steps, and at each step it considers up to $𝑛$ neighbors. That means one ant does about $𝑂(𝑛^2)$ work in a single iteration. With $𝑚$ ants, the cost per teration is $𝑂(𝑚\cdot𝑛^2)$ and across $𝑇$ iterations the total runtime is $𝑂(𝑇\cdot𝑚\cdot𝑛^2)$. For space, storing the graph with pheromone values takes 
-$𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛). So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛). Correctness comes from the way pheromone reinforcement works. If a path has cost $𝐿𝑘$, the pheromone added is $𝑄𝐿𝑘$ so shorter paths get more pheromone. Over time, this makes them more likely to be chosen, and the probability of selecting the best path increases with each iteration until the colony converges.
+$𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛)$. So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛). Correctness comes from the way pheromone reinforcement works. If a path has cost $𝐿𝑘$, the pheromone added is $𝑄𝐿𝑘$ so shorter paths get more pheromone. Over time, this makes them more likely to be chosen, and the probability of selecting the best path increases with each iteration until the colony converges.
 
 ```
 Pseudocode
@@ -112,10 +112,25 @@ for iteration = 1 to T:
         cost = compute_cost(path) # O(n)
         if cost < best_cost:
             best_path = path
-    update_pheromones(best_path)  # \Deltatau_ij = Q / L_best
-    evaporate_pheromones()        # tau_ij ← (1 - rho) * tau_ij
+    update_pheromones(best_path)  
+    evaporate_pheromones()       
 ```
 
+In Ant Colony Optimization, pheromone levels are updated using two complementary rules: deposit and evaporation. The deposit rule strengthens the edges of paths that ants discover. The amount of pheromone added is inversely proportional to the path’s cost, so shorter paths receive stronger reinforcement. This is expressed mathematically as: 
+\[
+\Delta \tau_{ij} = \frac{Q}{L_{\text{best}}}
+\]
+[2]
+where $𝑄$ is a constant and $𝐿_best$ is the cost of the chosen path. This appears in the `deposit_pheromones()` function, where the program calculates `deposit = colony->deposit_amount / L` and adds that value to each edge in the path. This ensures that paths with lower cost accumulate more pheromone, making them more likely to be selected in future iterations. 
+
+The evaporation rule works in the opposite direction by gradually reducing pheromone levels across all edges. This prevents older or less effective paths from dominating indefinitely and encourages continued exploration. The formula is:
+\[
+\tau_{ij}(t+1) = (1 - \rho) \cdot \tau_{ij}(t)
+\]
+[2]
+where $𝜌$ is the evaporation rate. This is handled in the `evaporate_pheromones()` function, which multiplies each pheromone value by `(1.0 - colony->evaporation_rate)`. This ensures that pheromone trails decay over time.
+
+Together, these two rules balance reinforcement and decay: deposit makes good paths stronger, while evaporation keeps the search space open. This combination allows the colony to steadily converge toward quality solutions without getting stuck too early on suboptimal paths.
 
 ## Application
 
