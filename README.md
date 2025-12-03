@@ -117,16 +117,16 @@ for iteration = 1 to T:
 ```
 
 In Ant Colony Optimization, pheromone levels are updated using two complementary rules: deposit and evaporation. The deposit rule strengthens the edges of paths that ants discover. The amount of pheromone added is inversely proportional to the path’s cost, so shorter paths receive stronger reinforcement. This is expressed mathematically as: 
-\[
-\Delta \tau_{ij} = \frac{Q}{L_{\text{best}}}
-\]
+
+$$\Delta \tau_{ij} = \frac{Q}{L_{\text{best}}}$$
+
 [2]
 where $𝑄$ is a constant and $𝐿_best$ is the cost of the chosen path. This appears in the `deposit_pheromones()` function, where the program calculates `deposit = colony->deposit_amount / L` and adds that value to each edge in the path. This ensures that paths with lower cost accumulate more pheromone, making them more likely to be selected in future iterations. 
 
 The evaporation rule works in the opposite direction by gradually reducing pheromone levels across all edges. This prevents older or less effective paths from dominating indefinitely and encourages continued exploration. The formula is:
-\[
-\tau_{ij}(t+1) = (1 - \rho) \cdot \tau_{ij}(t)
-\]
+
+$$\tau_{ij}(t+1) = (1 - \rho) \cdot \tau_{ij}(t)$$
+
 [2]
 where $𝜌$ is the evaporation rate. This is handled in the `evaporate_pheromones()` function, which multiplies each pheromone value by `(1.0 - colony->evaporation_rate)`. This ensures that pheromone trails decay over time.
 
