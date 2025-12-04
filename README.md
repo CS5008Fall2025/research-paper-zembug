@@ -40,7 +40,7 @@ ACO is a search method that uses probability to tackle tough optimization proble
 
 To evaluate the performance of Ant Colony Optimization (ACO), Experiments were run varying the algorithm’s parameters: pheromone influence ($\alpha$), heuristic influence ($\alpha$), evaporation rate ($\rho$), and deposit amount ($Q$). Each run produced a convergence log in CSV format, recording both the best solution found in each iteration and the overall global best solution. At the end of each run, a "Final" row was appended to summarize the colony’s global best path length, cost, normalized cost, and improvement factor.
 
-The normalized cost was calculated by dividing the best path cost by a simple baseline called the “chain” path, defined as $1.1 \cdot (𝑛 − 1)$ for a graph with $n$  nodes. The extra factor of 1.1 makes this baseline slightly larger than the trivial chain, so it’s easier to compare results across different graph sizes. This gives a scale‑free measure of efficiency. The improvement factor was then computed as the baseline cost divided by the best path cost, showing how much better the colony’s solution was compared to the chain path.
+The normalized cost was calculated by dividing the best path cost by a simple baseline called the “chain” path, defined as $1.1 \cdot (𝑛 − 1)$ for a graph with $n$  nodes. The extra factor of $1.1$ makes this baseline slightly larger than the trivial chain, so it’s easier to compare results across different graph sizes. This gives a scale‑free measure of efficiency. The improvement factor was then computed as the baseline cost divided by the best path cost, showing how much better the colony’s solution was compared to the chain path.
 
 ACO Parameter Comparison:
 
@@ -57,13 +57,13 @@ ACO Parameter Comparison:
 | 9   | 2.0       | 1.0      | 0.5             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
 | 10  | 1.5       | 3.0      | 0.4             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
 
-Each run in the experiment used different parameter settings, which shaped how the ant colony explored the graph. Alpha ($\alpha$) controls how strongly ants follow pheromone trails, while Beta ($\beta$) determines how much they rely on heuristic information such as edge length. Evaporation ($\rho$) sets the rate at which pheromone trails fade, encouraging exploration when it is high, and Deposit (Q) is the amount of pheromone added when a path is found, reinforcing successful solutions more strongly when it is large. The outcome columns summarize what the colony achieved: `GlobalBestLength` is the number of nodes in the best path discovered, and `GlobalBestCost` is the total cost of that path. `NormBestCost` serves as a quality score, comparing the colony’s best path cost against a baseline “chain path” cost. Values closer to 0 indicate efficient solutions, while values closer to 1 reflect inefficiency.
+Each run in the experiment used different parameter settings, which shaped how the ant colony explored the graph. Alpha ($\alpha$) controls how strongly ants follow pheromone trails, while Beta ($\beta$) determines how much they rely on edge length. Evaporation ($\rho$) sets the rate at which pheromone trails fade, encouraging exploration when it is high, and Deposit (Q) is the amount of pheromone added when a path is found, reinforcing successful solutions more strongly when it is large. The columns summarize what the colony achieved: `GlobalBestLength` is the number of nodes in the best path discovered, and `GlobalBestCost` is the total sum of edge weights of that path. `NormBestCost` serves as a quality score, comparing the colony’s best path cost against a baseline “chain" path cost. Values closer to $0$ indicate efficient solutions, while values closer to $1$ reflect inefficiency.
 
 In this experiment, all ten runs converged to the same final solution: a 13‑node path with a cost of 18.40, normalized to 0.3414, and an improvement factor of 2.9293. This consistency reflects the graph’s structure, which strongly favored the shortcut path. The parameters did not change the destination, but they did influence the journey. Some runs locked into the optimal path almost immediately, while others wandered through longer detours before reinforcing the best solution. In a few cases, the colony oscillated between multiple path lengths, showing unstable reinforcement before settling. The above results table captures only the destination, but the iteration logs and chart reveal the journey, making visible how different parameter choices shaped the exploration process.[6]
 
 ![Best Path Cost Convergence](bestpathcost.png)
 
-The chart of `BestPathCost` across iterations shows these dynamics. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the optimum. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final row to the full trajectory of exploration.[5]
+The chart of `BestPathCost` across iterations shows these dynamics. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the best solution. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final solution to the full trajectory of exploration.[5]
 
 Convergence Statistics:
 
@@ -80,17 +80,16 @@ Convergence Statistics:
 | 9   | ~5                          | 18.4                      | 18.4             | Immediate convergence, stable |
 | 10  | ~6                          | 18.4                      | 18.4             | Near instant convergence |
 
-*Iterations to Convergence = approximate iteration count when BestPathCost first reached 18.40 and remained stable. Shorter iteration counts indicate faster lock‑in to the optimal path, while higher counts reflect slower or unstable convergence.
+*Iterations to Convergence = approximate iteration count when `BestPathCost` first reached 18.40 and remained stable. Shorter iteration counts indicate faster lock‑in to the optimal path, while higher counts reflect slower or unstable convergence.
 
 ![ACO Convergence Speed by Run](ConvergenceSpeed.png)
 
-Together, the empirical tables and charts demonstrate that evaluating ACO requires looking beyond final solutions to the full convergence trajectory, where parameter choices determine whether colonies find the optimum quickly, slowly, or unpredictably. Because each run was logged in CSV format and visualized, the experiments are reproducible and parameter effects can be compared directly.
+Together, the empirical tables and charts demonstrate that evaluating ACO requires looking beyond final solutions to the full convergence path, where parameter choices determine whether colonies find the best solution quickly, slowly, or unpredictably. 
 
 
 ## Scalability Analysis
 
-The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical bounds show that each ant requires up to $O(n^2)$ work per iteration on a graph with $n$ nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over $t$ iterations, the total runtime grows as $O(t \cdot k \cdot n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium‑sized graphs but becomes increasingly costly for very large instances.[4][5]
-
+The scalability of ACO reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical limits show that each ant requires up to $O(n^2)$ work per iteration on a graph with $n$ nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over $t$ iterations, the total runtime grows as $O(t \cdot k \cdot n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium sized graphs but becomes increasingly costly for very large graphs.[4][5]
 
 Scalability Results:
 
@@ -103,26 +102,26 @@ Scalability Results:
 | 800                 | 9.802       | 14.65       | 843.40       | 0.9596       |
 | 1000                | 16.019      | 22.89       | 1063.40      | 0.9677       |
 
-All experiments used the same fixed parameters so the only variable was graph size. The colony had 50 ants running for 100 iterations. Pheromone influence ($\alpha$) was set to 1.0, heuristic influence ($\beta$) to 3.0, and evaporation rate ($\rho$) to 0.5. Each ant deposited a fixed amount of pheromone (10.0), and a small exploration probability (0.05) allowed occasional random moves. Keeping these values constant ensured the results show pure scalability effects.
+All experiments used the same fixed parameters so the only variable was graph size. The colony had 100 ants running for 50 iterations. Pheromone influence ($\alpha$) was set to 1.0, heuristic influence ($\beta$) to 3.0, and evaporation rate ($\rho$) to 0.5. Each ant deposited a fixed amount of pheromone (10.0), and a small exploration probability (0.05) allowed occasional random moves. Keeping these values constant ensured the results show pure scalability effects.
 
 ![Runtime(s) vs Nodes](runtimeVSnodes.png)
 
-Runtime vs Nodes: Runtime increases roughly quadratically with graph size, consistent with the $O(n^2)$ bound. The curve shows that small graphs are solved quickly, but runtime grows steeply beyond 400 nodes, reaching over 16 seconds at 1000 nodes.
+Runtime vs Nodes: Runtime increases quadratically with graph size, consistent with the $O(n^2)$ bound. The curve shows that small graphs are solved quickly, but runtime grows steeply beyond 400 nodes, reaching over 16 seconds at 1000 nodes.
 
 ![Memomory (MB) vs Nodes](memoryVSnodes.png)
 
-Memory vs Nodes: Memory usage also scales quadratically, reflecting the adjacency‑matrix pheromone storage. Even at 1000 nodes, memory remains under 25 MB, suggesting that runtime rather than memory is the limiting factor for scalability in this implementation.
+Memory vs Nodes: Memory usage also scales quadratically, as pheromone information is tracked for all edges in the graph. Even at 1000 nodes, memory remains under 25 MB, suggesting that runtime rather than memory is the limiting factor for scalability in this implementation.
 
 ![NormBestCost vs Nodes](normbestcostVSnodes.png)
 
-Normalized Best Cost vs Nodes: As graph size increases, NormBestCost values rise toward 1.0. This means that while the colony still finds efficient paths, the relative improvement over the trivial chain path becomes smaller in larger graphs. For example, at 50 nodes the normalized cost is 0.34 (a strong improvement), but by 1000 nodes it reaches 0.97, showing that the colony’s solution is only slightly better than the baseline.
+Normalized Best Cost vs Nodes: As graph size increases, `NormBestCost` values rise toward 1.0. This means that while the colony still finds efficient paths, the improvement over the "chain" path becomes smaller in larger graphs. At 50 nodes the normalized cost is 0.34 (a strong improvement), but by 1000 nodes it reaches 0.97, showing that the colony’s solution is only slightly better than the baseline.
 
 
 ## Theoretical Analysis
 When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
-For runtime, let $𝑛$ be the number of nodes, $𝑚$ the number of ants, and $𝑇$ the number of iterations. Each ant builds a path of up to $𝑛$ steps, and at each step it considers up to $𝑛$ neighbors. That means one ant does about $𝑂(𝑛^2)$ work in a single iteration. With $𝑚$ ants, the cost per iteration is $𝑂(𝑚\cdot𝑛^2)$ and across $𝑇$ iterations the total runtime is $𝑂(𝑇\cdot𝑚\cdot𝑛^2)$. For space, storing the graph with pheromone values takes $𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛)$. So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛)$. Correctness comes from the way pheromone reinforcement works. If a path has cost $𝐿_𝑘$ the pheromone added:
+For runtime, let $𝑛$ be the number of nodes, $𝑚$ the number of ants, and $𝑇$ the number of iterations. Each ant builds a path of up to $𝑛$ steps, and at each step it considers up to $𝑛$ neighbors. That means one ant does about $𝑂(𝑛^2)$ work in a single iteration. With $𝑚$ ants, the cost per iteration is $𝑂(𝑚\cdot𝑛^2)$ and across $𝑇$ iterations the total runtime is $𝑂(𝑇\cdot𝑚\cdot𝑛^2)$. For space, storing the graph with pheromone values takes $𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛)$. So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛)$. Correctness comes from the way pheromone reinforcement works. For a path with cost $𝐿_𝑘$ the pheromone deposited is:
 $$\Delta \tau_{ij} = \frac{Q}{L_k}$$
-so shorter paths get more pheromone. Over time, this makes them more likely to be chosen, and the probability of selecting the best path increases with each iteration until the colony converges.[1][2]
+This means shorter paths receive more pheromone. Over time, they become more likely to be chosen, and the probability of selecting the best path increases with each iteration until the colony converges.[1][2]
 
 ```
 Pseudocode:
@@ -136,12 +135,14 @@ for iteration = 1 to T: # repeat search process T times
     update_pheromones(best_path) # reinforce good edges (Δτ_ij = Q / L_best)
     evaporate_pheromones() # decay all edges (τ_ij ← (1 - ρ) τ_ij)
 ```
-Correctness can be understood by looking at how the algorithm behaves over multiple iterations. At the very beginning, all paths have the same amount of pheromone, so ants choose randomly. As iterations go on, ants add more pheromone to shorter paths, which makes those paths more attractive. During each iteration, each ant deposits pheromone in proportion to $\frac{Q}{L_k}$, which means shorter paths get stronger reinforcement. Among all ants, the best path overall (with cost $𝐿_best$) receives the largest reinforcement. Evaporation reduces pheromone across all edges, but because the best path keeps getting reinforced, it maintains its advantage. Over time, ants become more likely to follow the best path. As this reinforcement continues, the colony gradually converges toward a good solution.
+
+Correctness can also be understood by looking at how the algorithm behaves over multiple iterations. At the very beginning, all paths have the same amount of pheromone, so ants choose randomly. As iterations go on, ants add more pheromone to shorter paths, which makes those paths more attractive. During each iteration, each ant deposits pheromone in proportion to $\frac{Q}{L_k}$, which means shorter paths get stronger reinforcement. Among all ants, the best path overall (with cost $𝐿_best$) receives the largest reinforcement. Evaporation reduces pheromone across all edges, but because the best path keeps getting reinforced, it maintains its advantage. Over time, ants become more likely to follow the best path. As this reinforcement continues, the colony gradually converges toward a good solution.[4]
 
 The pheromone levels are updated using two complementary rules: deposit and evaporation. The deposit rule strengthens the edges of paths that ants discover. The amount of pheromone added is inversely proportional to the path’s cost, so shorter paths receive stronger reinforcement. This is expressed mathematically as: 
 $$\Delta \tau_{ij} = \frac{Q}{L_{\text{best}}}$$
-where $𝑄$ is a constant and $𝐿_best$ is the cost of the chosen path. This appears in the `deposit_pheromones()` function, where the program calculates `deposit = colony->deposit_amount / L` and adds that value to each edge in the path. This ensures that paths with lower cost accumulate more pheromone, making them more likely to be selected in future iterations.[1][2]
-The evaporation rule works in the opposite direction by gradually reducing pheromone levels across all edges. This prevents older or less effective paths from dominating indefinitely and encourages continued exploration. The formula is:
+where $𝑄$ is a constant and $𝐿_best$ is the cost of the chosen path. This appears in the `deposit_pheromones()` function, where `deposit = colony->deposit_amount / L` is calculated and adds that value to each edge in the path. This ensures that paths with lower cost accumulate more pheromone, making them more likely to be selected in future iterations.[1][2]
+
+The evaporation rule works in the opposite direction by gradually reducing pheromones across all edges. This prevents older or less effective paths from dominating indefinitely and encourages continued exploration. The formula is:
 $$\tau_{ij}(t+1) = (1 - \rho) \cdot \tau_{ij}(t)$$
 where $𝜌$ is the evaporation rate. This is handled in the `evaporate_pheromones()` function, which multiplies each pheromone value by `(1.0 - colony->evaporation_rate)`. This ensures that pheromone trails decay over time.[1][2]
 
@@ -150,14 +151,14 @@ Together, these two rules balance reinforcement and decay: deposit makes good pa
 
 ## Application
 
-In practice, ACO has been applied across many domains. In computer science and telecommunications, it is used for adaptive network routing, where dynamic traffic conditions require flexible path selection to minimize congestion and latency. In operations research, ACO has proven effective for the Traveling Salesman Problem and vehicle routing, helping logistics companies reduce delivery times and costs. Manufacturing and project management benefit from ACO’s scheduling capabilities, where tasks must be allocated across machines or workers in ways that balance efficiency and resource use. Engineering fields employ ACO for design optimization, while water resource management has leveraged it to improve reservoir operations and groundwater allocation. More recently, healthcare applications have emerged, such as optimizing treatment schedules and hospital resource distribution.[3]
+In practice, ACO has been used in many different areas. In computer science and telecommunications, it helps with network routing, where traffic changes all the time and flexible path selection is needed to avoid congestion. In operations research, ACO has been applied to the Traveling Salesman Problem and vehicle routing, helping companies plan deliveries more efficiently. In manufacturing and project management, it supports scheduling by deciding how tasks should be shared across machines or workers to save time and resources. Engineers use ACO for design optimization, and water resource managers apply it to improve reservoir operations and groundwater use. More recently, healthcare has started using ACO to plan treatment schedules and manage hospital resources.[3]
 
-ACO is particularly useful in these areas because it is robust, scalable, and adaptable to dynamic environments. By balancing exploration and exploitation, it escapes local optima and converges on strong global solutions. Its ability to model distributed decision‑making makes it a natural fit for real‑world problems where traditional deterministic algorithms struggle with complexity and uncertainty. [3]
+ACO is useful in these areas because it is flexible, can handle certain problems, and adapts well when conditions change. By balancing exploration (trying new paths) and exploitation (reinforcing good paths), it avoids getting stuck in poor solutions and moves toward strong ones. Its ability to mimic how decisions are made makes it a natural fit for real world problems where exact algorithms struggle with complexity and uncertainty.[3]
 
 
 ## Implementation
 
-The Ant Colony Optimization (ACO) algorithm was implemented in C. Standard libraries such as `<stdio.h>` and `<stdlib.h>` were used for basic input/output and memory management. In addition, simple custom data structures were created to keep track of the graph connections and the pheromone levels. A challenge was ensuring that path construction respected the maximum path length without exceeding allocated buffers. Defensive programming techniques were applied to prevent overflow errors, with explicit boundary checks and invalid path handling.
+The ACO algorithm was implemented in C. Standard libraries such as `<stdio.h>` and `<stdlib.h>` were used for basic input/output and memory management. In addition, data structures were created to keep track of the graph connections and the pheromone levels. A challenge was ensuring that path construction respected the maximum path length without exceeding allocated buffers. Defensive programming techniques were applied to prevent overflow errors, with  boundary checks and invalid path handling.
 
 Path construction was handled through a loop that walks the graph step by step. Each ant terminates either upon reaching the target node or when no valid move exists, while strict bounds on path length prevent buffer overflows. The inclusion of a visited array prevents cycles, and the `pick_next_node` function introduces a small probability of random exploration to balance exploitation with exploration.
 
@@ -222,13 +223,13 @@ static void evaporate_pheromones(AntGraph* g, AntColony* colony) {
 }
 
 ```
-This corresponds to the evaporation rule, which prevents older trails from dominating and keeps exploration active.[1][2][5]
+This corresponds to the evaporation rule, which prevents older trails from overpowering and keeps exploration active.[1][2][5]
 
-Together, these functions formed the backbone of the ACO cycle. Ants construct paths probabilistically based on pheromone and heuristic information, pheromone trails are updated after each iteration, and evaporation ensures weaker paths fade over time. Separate functions for path construction, pheromone updates, and logging made it straightforward to experiment with different parameter settings and observe their effects.
+Together, these functions formed the backbone of the ACO cycle. Ants construct paths probabilistically based on pheromone and edge weights, pheromone trails are updated after each iteration, and evaporation ensures weaker paths fade over time. Separate functions for path construction, pheromone updates, and logging made it straightforward to experiment with different parameter settings and observe their effects.
 
 ## Summary
-- Provide a summary of your findings
-- What did you learn?
+
+Through these experiments, I found that Ant Colony Optimization (ACO) can reliably discover paths that are shorter than a simple baseline chain. By using normalized cost, I was able to compare efficiency across graphs of different sizes in a fair way, and the improvement factor showed how much better the colony’s solution was compared to the baseline. I also learned that the algorithm’s correctness comes from its reinforcement process: ants deposit more pheromone on shorter paths, evaporation balances things out, and over time the colony tends to follow the best path more often. The scalability analysis showed that runtime and memory grow as the graph size increases, but the method still works well in practice. Finally, I saw how ACO can be applied in many areas, from routing and scheduling to engineering and healthcare, because it is flexible and adapts to changing conditions. Overall, I learned that ACO’s strength lies in balancing exploration of new paths with reinforcement of good ones, and that clear metrics and explanations make its behavior easier to understand. Coming from a biology background, it was especially fun to see how ideas inspired by real ants could be combined with computer science to solve complex problems, making the project feel like a true blend of disciplines.
 
 
 
