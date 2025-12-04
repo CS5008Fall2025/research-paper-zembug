@@ -5,9 +5,6 @@
 * Topic: Ant Colony Optimization (ACO)
 
 
-
-Note the following is an example outline to help you. Please rework as you need, you do not need to follow the section heads and *YOU SHOULD NOT* make everything a bulleted list. This needs to read as an executive report/research paper. 
-
 ## Introduction
 
 Ant Colony Optimization (ACO) is an algorithm inspired by the cooperative behavior of ants in nature. When ants search for food, they explore their environment and leave behind pheromone trails. These chemical signals act as a form of indirect communication, guiding other ants toward promising paths. Over time, trails along shorter or more efficient routes become stronger as more ants reinforce them, while less effective paths fade away. This simple biological process allows an ant colony, without any central control, to collectively discover near optimal solutions to complex problems such as finding the shortest path between their nest and a food source. ACO takes this idea and translates it into a computational model, where artificial “ants” explore graphs and update pheromone levels to gradually converge on good solutions. [1][2]
@@ -43,7 +40,7 @@ To evaluate the performance of Ant Colony Optimization (ACO), I conducted experi
 The normalized cost was calculated by dividing the best path cost by a baseline “chain” path cost, defined as $1.1 \cdot (𝑛 − 1)$ for a graph of $𝑛$
 nodes. This provides a scale free measure of efficiency, allowing comparisons across different graph sizes. The improvement factor was computed as the ratio of the baseline cost to the best path cost, showing how much better the colony’s solution was compared to the trivial chain.
 
-# ACO Parameter Comparison
+ACO Parameter Comparison:
 
 | Run | $\alpha$ (Alpha) | $\beta$ (Beta) | $\rho$ (Evaporation) | Q (Deposit) | GlobalBestLength | GlobalBestCost | NormBestCost | ImprovementFactor |
 |-----|-----------|----------|-----------------|-------------|------------------|----------------|--------------|-------------------|
@@ -66,7 +63,7 @@ In this experiment, all ten runs converged to the same final solution: a 13‑no
 
 The chart of `BestPathCost` across iterations shows these dynamics. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the optimum. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final row to the full trajectory of exploration.[5]
 
-## Convergence Statistics
+Convergence Statistics:
 
 | Run | Iterations to Convergence* | Avg. Pre‑Convergence Cost | Max. Detour Cost | Oscillation Notes |
 |-----|-----------------------------|---------------------------|------------------|-------------------|
@@ -92,7 +89,7 @@ Together, the empirical tables and charts demonstrate that evaluating ACO requir
 The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical bounds show that each ant requires up to $O(n^2)$ work per iteration on a graph with $n$ nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over $t$ iterations, the total runtime grows as $O(t \cdot k \cdot n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium‑sized graphs but becomes increasingly costly for very large instances.[4][5]
 
 
-# Scalability Results 
+Scalability Results:
 
 | Nodes (GRAPH_SIZE)  | Runtime (s) | Memory (MB) | BestPathCost | NormBestCost |
 |---------------------|-------------|-------------|--------------|--------------|
@@ -103,13 +100,18 @@ The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory us
 | 800                 | 9.802       | 14.65       | 843.40       | 0.9596       |
 | 1000                | 16.019      | 22.89       | 1063.40      | 0.9677       |
 
+All experiments used the same fixed parameters so the only variable was graph size. The colony had 50 ants running for 100 iterations. Pheromone influence ($\alpha$) was set to 1.0, heuristic influence ($\beta$) to 3.0, and evaporation rate ($\rho$) to 0.5. Each ant deposited a fixed amount of pheromone (10.0), and a small exploration probability (0.05) allowed occasional random moves. Keeping these values constant ensured the results show pure scalability effects.
+
 ![Runtime(s) vs Nodes](runtimeVSnodes.png)
+
 Runtime vs Nodes: Runtime increases roughly quadratically with graph size, consistent with the $O(n^2)$ bound. The curve shows that small graphs are solved quickly, but runtime grows steeply beyond 400 nodes, reaching over 16 seconds at 1000 nodes.
 
 ![Memomory (MB) vs Nodes](memoryVSnodes.png)
+
 Memory vs Nodes: Memory usage also scales quadratically, reflecting the adjacency‑matrix pheromone storage. Even at 1000 nodes, memory remains under 25 MB, suggesting that runtime rather than memory is the limiting factor for scalability in this implementation.
 
 ![NormBestCost vs Nodes](normbestcostVSnodes.png)
+
 Normalized Best Cost vs Nodes: Solution quality improves steadily with graph size, asymptotically approaching 1.0. By 800 nodes, the normalized cost exceeds 0.95, indicating that the colony reliably converges to near‑optimal paths even as the graph grows.
 
 ## Theoretical Analysis
