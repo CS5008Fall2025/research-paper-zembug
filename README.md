@@ -103,7 +103,9 @@ The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory us
 | 800                 | 9.802       | 14.65       | 843.40       | 0.9596       |
 | 1000                | 16.019      | 22.89       | 1063.40      | 0.9677       |
 
-
+![Runtime(s) vs Nodes](runtimeVSnodes.png)
+![Memomory (MB) vs Nodes](memoryVSnodes.png)
+![NormBestCost vs Nodes](normbestcostVSnodes.png)
 
 ## Theoretical Analysis
 When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
