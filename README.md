@@ -40,8 +40,7 @@ ACO is a search method that uses probability to tackle tough optimization proble
 
 To evaluate the performance of Ant Colony Optimization (ACO), Experiments were run varying the algorithm’s parameters: pheromone influence ($\alpha$), heuristic influence ($\alpha$), evaporation rate ($\rho$), and deposit amount ($Q$). Each run produced a convergence log in CSV format, recording both the best solution found in each iteration and the overall global best solution. At the end of each run, a "Final" row was appended to summarize the colony’s global best path length, cost, normalized cost, and improvement factor.
 
-The normalized cost was calculated by dividing the best path cost by a baseline “chain” path cost, defined as $1.1 \cdot (𝑛 − 1)$ for a graph of $𝑛$
-nodes. This provides a scale free measure of efficiency, allowing comparisons across different graph sizes. The improvement factor was computed as the ratio of the baseline cost to the best path cost, showing how much better the colony’s solution was compared to the trivial chain.
+The normalized cost was calculated by dividing the best path cost by a simple baseline called the “chain” path, defined as $1.1 \cdot (𝑛 − 1)$ for a graph with $n$  nodes. The extra factor of 1.1 makes this baseline slightly larger than the trivial chain, so it’s easier to compare results across different graph sizes. This gives a scale‑free measure of efficiency. The improvement factor was then computed as the baseline cost divided by the best path cost, showing how much better the colony’s solution was compared to the chain path.
 
 ACO Parameter Comparison:
 
