@@ -9,10 +9,6 @@
 Note the following is an example outline to help you. Please rework as you need, you do not need to follow the section heads and *YOU SHOULD NOT* make everything a bulleted list. This needs to read as an executive report/research paper. 
 
 ## Introduction
-- What is the algorithm/datastructure?
-- What is the problem it solves? 
-- Provide a brief history of the algorithm/datastructure. (make sure to cite sources)
-- Provide an introduction to the rest of the paper. 
 
 Ant Colony Optimization (ACO) is an algorithm inspired by the cooperative behavior of ants in nature. When ants search for food, they explore their environment and leave behind pheromone trails. These chemical signals act as a form of indirect communication, guiding other ants toward promising paths. Over time, trails along shorter or more efficient routes become stronger as more ants reinforce them, while less effective paths fade away. This simple biological process allows an ant colony, without any central control, to collectively discover near optimal solutions to complex problems such as finding the shortest path between their nest and a food source. ACO takes this idea and translates it into a computational model, where artificial “ants” explore graphs and update pheromone levels to gradually converge on good solutions. [1][2]
 
@@ -34,7 +30,6 @@ Ant Colony Optimization requires memory to store pheromone values and track the 
 | $k$ ants, one iteration | $O(k \cdot n^2)$     | $O(n^2)$         |
 | $k$ ants, $t$ iterations| $O(t \cdot k \cdot n^2)$ | $O(n^2)$     |
 | Simplified reporting    | $O(k \cdot n^2)$     | $O(n^2)$         |
-
 
 General analysis of the algorithm/datastructure:
 
@@ -92,6 +87,24 @@ The chart of BestPathCost across iterations shows these dynamics clearly. Runs s
 
 Together, the empirical tables and charts demonstrate that evaluating ACO requires looking beyond final solutions to the full convergence trajectory, where parameter choices determine whether colonies find the optimum quickly, slowly, or unpredictably. Because each run was logged in CSV format and visualized, the experiments are reproducible and parameter effects can be compared directly.
 
+## Scalability Analysis
+
+The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical bounds show that each ant requires up to $O(n^2)$ work per iteration on a graph with n nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over t iterations, the total runtime grows as $O(t · k · n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium‑sized graphs but becomes increasingly costly for very large instances.[4][5]
+
+
+# Scalability Results 
+
+| Nodes (GRAPH_SIZE)  | Runtime (s) | Memory (MB) | BestPathCost | NormBestCost |
+|---------------------|-------------|-------------|--------------|--------------|
+| 50                  | 0.121       | 0.06        | 18.40        | 0.3414       |
+| 100                 | 0.249       | 0.23        | 73.40        | 0.6740       |
+| 200                 | 0.670       | 0.92        | 183.40       | 0.8378       |
+| 400                 | 2.541       | 3.66        | 403.40       | 0.9191       |
+| 800                 | 9.802       | 14.65       | 843.40       | 0.9596       |
+| 1000                | 16.019      | 22.89       | 1063.40      | 0.9677       |
+
+
+
 ## Theoretical Analysis
 When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
 For runtime, let $𝑛$ be the number of nodes, $𝑚$ the number of ants, and $𝑇$ the number of iterations. Each ant builds a path of up to $𝑛$ steps, and at each step it considers up to $𝑛$ neighbors. That means one ant does about $𝑂(𝑛^2)$ work in a single iteration. With $𝑚$ ants, the cost per iteration is $𝑂(𝑚\cdot𝑛^2)$ and across $𝑇$ iterations the total runtime is $𝑂(𝑇\cdot𝑚\cdot𝑛^2)$. For space, storing the graph with pheromone values takes $𝑂(𝑛^2)$, and storing each ant’s path takes $𝑂(𝑚\cdot𝑛)$. So overall space is $𝑂(𝑛^2+𝑚\cdot𝑛)$. Correctness comes from the way pheromone reinforcement works. If a path has cost $𝐿_𝑘$ the pheromone added:
@@ -129,37 +142,69 @@ Ant Colony Optimization (ACO) is a metaheuristic algorithm designed to solve com
 
 ## Implementation
 
-The Ant Colony Optimization algorithm was implemented in C, chosen for its speed, fine‑grained memory control, and suitability for handling graph structures directly. Standard libraries such as `<stdio.h>` and `<stdlib.h>` were used for input/output and dynamic memory allocation, while custom data structures were written to manage adjacency lists and pheromone matrices. One of the key engineering challenges was ensuring that path construction respected the maximum path length without exceeding allocated buffers. This required careful boundary checks and defensive programming to prevent overflow errors. For example:
+The Ant Colony Optimization (ACO) algorithm was implemented in C. Standard libraries such as <stdio.h> and <stdlib.h> were used for input/output and dynamic memory allocation, while custom data structures were developed to manage adjacency lists and pheromone matrices. A central engineering challenge was ensuring that path construction respected the maximum path length without exceeding allocated buffers. Defensive programming techniques were applied to prevent overflow errors, with explicit boundary checks and invalid path handling. For example:
+
 ```
-// Path construction with boundary check
-for (int step = 0; step < max_steps && path_len < n; step++) {
-    int next = choose_next_node(current, pheromone, heuristic);
-    if (next == -1) break; // no valid neighbor
-    path[path_len++] = next;
+// Walk through the graph until reaching the end or hitting max steps
+for (int steps = 0; steps < max_steps; steps++) {
+    if (current == end) break; // stop if target reached
+    // Decide the next node using pheromone + heuristic rules
+    int next = pick_next_node(g, current, previous, visited, num_nodes, colony);
+    // If no valid move is found, mark path as invalid and exit
+    if (next == -1) {
+        *path_length = 0;
+        free(visited);
+        return;
+    }
+    // Add the chosen node to the path
+    path[idx++] = next;
+    visited[next] = 1;
+    // Update current and previous for the next step
+    previous = current;
+    current = next;
 }
 ```
-Another difficulty arose when certain edges with very low weights and strong pheromone reinforcement caused the colony to collapse too quickly onto a single path. To counter this, variability was introduced into the decision process so that ants occasionally explored alternative routes, balancing exploitation with exploration. The pheromone update rules also had to be tuned so that shortcuts were reinforced appropriately without overwhelming longer detours, ensuring that convergence was stable rather than immediate and brittle.[6] These rules were implemented as modular functions:
+
+This loop ensures that ants terminate upon reaching the target node or when no valid move exists, while maintaining strict bounds on path length to prevent buffer overflows. The inclusion of a visited array prevents cycles, and the `pick_next_node` function introduces a small probability of random exploration to balance exploitation with exploration. Another difficulty arose when edges with very low weights and strong pheromone reinforcement caused the colony to collapse prematurely onto a single path. To counter this, variability was introduced into the decision process, and pheromone update rules were tuned to reinforce shortcuts without overwhelming longer detours. These rules were implemented as modular functions:
+
 ```
-// Deposit pheromone on best path
-void deposit_pheromones(double **pheromone, int *path, int path_len, double Q, double L_best) {
-    double deposit = Q / L_best; // Δτ_ij = Q / L_best
-    for (int k = 0; k < path_len - 1; k++) {
-        int i = path[k], j = path[k+1];
-        pheromone[i][j] += deposit;
-        pheromone[j][i] += deposit; // symmetric graph
+// Deposit pheromones along the path taken by an ant.
+static void deposit_pheromones(AntGraph* g, int* path, int path_length, AntColony* colony) {
+    // Compute the total cost (length) of the path
+    double L = compute_path_cost(g, path, path_length);
+    // Amount of pheromone to deposit is inversely proportional to path cost
+    double deposit = colony->deposit_amount / L;
+    // Walk through each edge in the path
+    for (int i = 0; i < path_length - 1; i++) {
+        int u = path[i]; // current node
+        int v = path[i + 1]; // next node
+        // Add pheromone to both directions of the edge
+        g->edges[u][v].pheromone += deposit;
+        g->edges[v][u].pheromone += deposit;
+        // Clamp pheromone values to stay within reasonable bounds
+        if (g->edges[u][v].pheromone < 0.01) g->edges[u][v].pheromone = 0.01; // minimum floor
+        if (g->edges[u][v].pheromone > 10.0) g->edges[u][v].pheromone = 10.0; // maximum cap
     }
 }
 
-// Evaporation step
-void evaporate_pheromones(double **pheromone, int n, double rate) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            pheromone[i][j] *= (1.0 - rate); // τ_ij ← (1 - ρ) * τ_ij
+// Evaporate pheromones on all edges in the graph.
+static void evaporate_pheromones(AntGraph* g, AntColony* colony) {
+    // Loop through all edges in the graph
+    for (int i = 0; i < g->num_nodes; i++) {
+        // Evaporate pheromone on each edge connected to node i
+        for (int j = 0; j < g->num_nodes; j++) {
+            // Only evaporate if the edge exists
+            if (g->edges[i][j].exists) {
+                g->edges[i][j].pheromone *= (1.0 - colony->evaporation_rate);
+                if (g->edges[i][j].pheromone < 0.01) g->edges[i][j].pheromone = 0.01;
+            }
         }
     }
 }
+
 ```
-The final implementation followed the standard ACO cycle: ants construct paths probabilistically based on pheromone and heuristic information, pheromone trails are updated after each iteration, and evaporation ensures weaker paths fade over time. While reference implementations exist in other languages, this project was coded in C to maintain transparency and reproducibility. Modular functions for path construction, pheromone updates, and logging made it straightforward to experiment with different parameter settings and observe their effects.
+
+The final implementation followed the standard ACO cycle: ants construct paths probabilistically based on pheromone and heuristic information, pheromone trails are updated after each iteration, and evaporation ensures weaker paths fade over time. Modular functions for path construction, pheromone updates, and logging made it straightforward to experiment with different parameter settings and observe their effects.
 
 ## Summary
 - Provide a summary of your findings

@@ -6,7 +6,7 @@
 #include "ant_graph.h"
 #include "aco.h"
 
-#define GRAPH_SIZE 1000   // number of nodes in the graph
+#define GRAPH_SIZE 1000 // number of nodes in the graph
 #define NUM_ANTS 100    // number of ants in the colony
 
 int main() {
@@ -64,8 +64,20 @@ int main() {
     colony.max_steps = GRAPH_SIZE; // maximum steps allowed in a path
     colony.use_global_best_update = 0; // iteration-best ants deposit pheromone (not just global best)
 
-    // Run the ACO algorithm from node 0 to node GRAPH_SIZE-1 for 50 iterations
-    run_aco(g, &colony, 0, GRAPH_SIZE - 1, 50, logfile);
+    // Measure runtime of the ACO run
+    clock_t start = clock(); // start timing
+    run_aco(g, &colony, 0, GRAPH_SIZE - 1, 50, logfile); // run ACO from node 0 to last node 
+    clock_t end = clock(); // end timing
+    double runtime_sec = (double)(end - start) / CLOCKS_PER_SEC; // calculate elapsed time
+    fprintf(logfile, "Total runtime: %.3f seconds\n", runtime_sec); // log runtime
+    printf("Total runtime: %.3f seconds\n", runtime_sec);
+
+    // Estimate memory usage
+    size_t edge_mem = GRAPH_SIZE * GRAPH_SIZE * sizeof(Edge); // adjacency matrix
+    size_t path_mem = GRAPH_SIZE * sizeof(int); // global best path
+    size_t total_mem = edge_mem + path_mem; // total estimated memory
+    fprintf(logfile, "Estimated memory: %.2f MB\n", total_mem / (1024.0 * 1024.0)); // convert to MB
+    printf("Estimated memory: %.2f MB\n", total_mem / (1024.0 * 1024.0));
 
     // Clean up memory and close files
     free(colony.global_best_path);
