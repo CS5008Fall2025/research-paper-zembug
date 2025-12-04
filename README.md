@@ -45,7 +45,7 @@ nodes. This provides a scale free measure of efficiency, allowing comparisons ac
 
 # ACO Parameter Comparison
 
-| Run | α (Alpha) | β (Beta) | ρ (Evaporation) | Q (Deposit) | GlobalBestLength | GlobalBestCost | NormBestCost | ImprovementFactor |
+| Run | $\alpha$ (Alpha) | $\beta$ (Beta) | $\rho$ (Evaporation) | Q (Deposit) | GlobalBestLength | GlobalBestCost | NormBestCost | ImprovementFactor |
 |-----|-----------|----------|-----------------|-------------|------------------|----------------|--------------|-------------------|
 | 1   | 1.0       | 0.5      | 0.1             | 1.0         | 13               | 18.40          | 0.3414       | 2.9293            |
 | 2   | 1.0       | 3.0      | 0.5             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
@@ -58,13 +58,13 @@ nodes. This provides a scale free measure of efficiency, allowing comparisons ac
 | 9   | 2.0       | 1.0      | 0.5             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
 | 10  | 1.5       | 3.0      | 0.4             | 10.0        | 13               | 18.40          | 0.3414       | 2.9293            |
 
-Each run in the experiment used different parameter settings, which shaped how the ant colony explored the graph. Alpha (α) controls how strongly ants follow pheromone trails, while Beta (β) determines how much they rely on heuristic information such as edge length. Evaporation (ρ) sets the rate at which pheromone trails fade, encouraging exploration when it is high, and Deposit (Q) is the amount of pheromone added when a path is found, reinforcing successful solutions more strongly when it is large. The outcome columns summarize what the colony achieved: GlobalBestLength is the number of nodes in the best path discovered, and GlobalBestCost is the total cost of that path. NormBestCost expresses this cost on a standardized 0–1 scale, where a value closer to 0 indicates near‑optimal performance and values closer to 1 indicate poor performance relative to the baseline. ImprovementFactor shows how much better the final solution was compared to the baseline.
+Each run in the experiment used different parameter settings, which shaped how the ant colony explored the graph. Alpha ($\alpha$) controls how strongly ants follow pheromone trails, while Beta ($\beta$) determines how much they rely on heuristic information such as edge length. Evaporation ($\rho$) sets the rate at which pheromone trails fade, encouraging exploration when it is high, and Deposit (Q) is the amount of pheromone added when a path is found, reinforcing successful solutions more strongly when it is large. The outcome columns summarize what the colony achieved: `GlobalBestLength` is the number of nodes in the best path discovered, and `GlobalBestCost` is the total cost of that path. `NormBestCost` serves as a quality score, comparing the colony’s best path cost against a baseline “chain path” cost. Values closer to 1.0 indicate near‑optimal solutions, while lower values reflect inefficiency. `ImprovementFactor` shows how much better the final solution was compared to the baseline.
 
-In this experiment, all ten runs converged to the same final solution: a 13‑node path with a cost of 18.40, normalized to 0.3414, and an improvement factor of 2.9293. This consistency reflects the graph’s structure, which strongly favored the shortcut path. The parameters did not change the destination, but they did influence the journey. Some runs locked into the optimal path almost immediately, while others wandered through longer detours before reinforcing the best solution. In a few cases, the colony oscillated between multiple path lengths, showing unstable reinforcement before settling. The Final Results table captures only the destination, but the iteration logs and chart reveal the journey, making visible how different parameter choices shaped the exploration process.[6]
+In this experiment, all ten runs converged to the same final solution: a 13‑node path with a cost of 18.40, normalized to 0.3414, and an improvement factor of 2.9293. This consistency reflects the graph’s structure, which strongly favored the shortcut path. The parameters did not change the destination, but they did influence the journey. Some runs locked into the optimal path almost immediately, while others wandered through longer detours before reinforcing the best solution. In a few cases, the colony oscillated between multiple path lengths, showing unstable reinforcement before settling. The above results table captures only the destination, but the iteration logs and chart reveal the journey, making visible how different parameter choices shaped the exploration process.[6]
 
 ![Best Path Cost Convergence](bestpathcost.png)
 
-The chart of BestPathCost across iterations shows these dynamics clearly. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the optimum. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final row to the full trajectory of exploration.[5]
+The chart of `BestPathCost` across iterations shows these dynamics. Runs such as 4, 5, 9, and 10 dropped immediately to the cost of 18.40 and stayed flat, demonstrating rapid convergence. Runs 1, 2, 7, and 8 spent many iterations at higher costs between 26.90 and 31.90 before eventually rediscovering and locking into the optimum. Runs 3 and 6 illustrate the slowest convergence, oscillating between long detours with costs above 31 and even reaching 40.4 in Run 3 before finally stabilizing at 18.40 near the end. Although every run ended with the same final solution, the chart makes clear that the parameters shaped the path taken to reach it, influencing whether ants found the best path quickly, slowly, or unpredictably. Together, the tables and chart show that understanding convergence requires looking beyond the final row to the full trajectory of exploration.[5]
 
 ## Convergence Statistics
 
@@ -89,7 +89,7 @@ Together, the empirical tables and charts demonstrate that evaluating ACO requir
 
 ## Scalability Analysis
 
-The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical bounds show that each ant requires up to $O(n^2)$ work per iteration on a graph with n nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over t iterations, the total runtime grows as $O(t · k · n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium‑sized graphs but becomes increasingly costly for very large instances.[4][5]
+The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory usage, and convergence behavior change as the problem size grows. Theoretical bounds show that each ant requires up to $O(n^2)$ work per iteration on a graph with $n$ nodes, and pheromone storage also scales as $O(n^2)$. With $k$ ants over $t$ iterations, the total runtime grows as $O(t \cdot k \cdot n^2)$, while memory remains dominated by the pheromone matrix. This quadratic growth in both runtime and space means that ACO is practical for medium‑sized graphs but becomes increasingly costly for very large instances.[4][5]
 
 
 # Scalability Results 
@@ -104,8 +104,13 @@ The scalability of Ant Colony Optimization (ACO) reflects how runtime, memory us
 | 1000                | 16.019      | 22.89       | 1063.40      | 0.9677       |
 
 ![Runtime(s) vs Nodes](runtimeVSnodes.png)
+Runtime vs Nodes: Runtime increases roughly quadratically with graph size, consistent with the $O(n^2)$ bound. The curve shows that small graphs are solved quickly, but runtime grows steeply beyond 400 nodes, reaching over 16 seconds at 1000 nodes.
+
 ![Memomory (MB) vs Nodes](memoryVSnodes.png)
+Memory vs Nodes: Memory usage also scales quadratically, reflecting the adjacency‑matrix pheromone storage. Even at 1000 nodes, memory remains under 25 MB, suggesting that runtime rather than memory is the limiting factor for scalability in this implementation.
+
 ![NormBestCost vs Nodes](normbestcostVSnodes.png)
+Normalized Best Cost vs Nodes: Solution quality improves steadily with graph size, asymptotically approaching 1.0. By 800 nodes, the normalized cost exceeds 0.95, indicating that the colony reliably converges to near‑optimal paths even as the graph grows.
 
 ## Theoretical Analysis
 When we study Ant Colony Optimization (ACO), we want to know how fast it runs, how much memory it uses, and why it eventually finds good solutions.
